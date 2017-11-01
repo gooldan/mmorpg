@@ -1,5 +1,7 @@
-const io = require('socket.io'),
-   mongoose = require('mongoose');
+const io = require('socket.io')(8080),
+   mongoose = require('mongoose'),
+   crypto = require('crypto'),
+   Profile = require('./models/Profile');
 
 mongoose.Promise = Promise;
 
@@ -15,3 +17,31 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
    console.log(`Connected to Mongo at: ${new Date()}`)
 });
+
+io.on('connection', function (socket) {
+   socket.on('login', (username, pass) => {
+      Profile.findOne({'local.username': username, 'local.password': pass}, (err, user) => {
+         if (user) {
+            let token = createToken();
+            user.token = createToken();
+            socket.emit('token', token);
+         } else {
+            let newUser = new Profile();
+            let token = createToken();
+            newUser.local.username = username;
+            newUser.local.password = pass;
+            newUser.local.token = token;
+            newUser.save((err) => {
+               if (err) {}
+               else {
+                  socket.emit('token', token);
+               }
+            });
+         }
+      });
+   });
+});
+
+function createToken() {
+   return crypto.randomBytes(32).toString('hex');
+}

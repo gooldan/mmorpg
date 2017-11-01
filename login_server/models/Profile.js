@@ -33,3 +33,5 @@ var Profile = new Schema({
       money: {type: Number, default: 0}
    }
 });
+
+module.exports = mongoose.model('Profile', Profile);

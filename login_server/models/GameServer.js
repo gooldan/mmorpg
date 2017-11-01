@@ -7,3 +7,5 @@ var GameServer = new Schema({
    port: {type: Number},
    locations: [{type: ObjectId}]
 });
+
+module.exports = mongoose.model('GameServer', GameServer);

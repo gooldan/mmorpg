@@ -7,3 +7,5 @@ var Location = new Schema({
    weather: {type: Number},
    max_players: {type: Number, default: 4}
 });
+
+module.exports = mongoose.model('Location', Location);

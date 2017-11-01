@@ -8,3 +8,5 @@ var Item = new Schema({
    damage: {type: Number, default: 1},
    cost: {type: Number, default: 1}
 });
+
+module.exports = mongoose.model('Item', Item);
