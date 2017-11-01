@@ -4,6 +4,7 @@
 import "./helpers/context_menu.js"
 import "./helpers/external_links.js"
 
+import io from "socket.io-client"
 // All stuff below is just to show you how it works. You can delete all of it.
 import { remote } from "electron"
 import jetpack from "fs-jetpack"
@@ -125,9 +126,17 @@ const render = new Renderer(ctx, currentSpace)
 
 const gameEngine = new GameEngine(userObj, currentSpace, render)
 const userInput = new UserInput(window, gameEngine)
+const loginString = document.getElementById("login").value
+const passwordString = document.getElementById("password").value
+const socket = io("http://127.0.0.1:8080/")
+socket.emit("login", "allo1", "pass2")
+socket.on("token", (data) => {
+    console.log(data)
+})
 userInput.start(userObj)
 go(userObj12, gameEngine)
 go(userObj13, gameEngine)
 go(userObj15, gameEngine)
 go(userObj16, gameEngine)
 gameEngine.start()
+
