@@ -5,6 +5,8 @@
         "linebreak-style": ["error", "windows"],
         "quotes": ["error", "double"],
         "semi": ["error", "never"],
-        "no-plusplus": 0
+        "no-plusplus": 0,
+        "max-len":0,
+        "import/prefer-default-export":0
       }
 }

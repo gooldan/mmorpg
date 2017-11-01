@@ -6,7 +6,6 @@ const plumber = require('gulp-plumber');
 const jetpack = require('fs-jetpack');
 const bundle = require('./bundle');
 const utils = require('./utils');
-
 const projectDir = jetpack;
 const srcDir = jetpack.cwd('./src');
 const destDir = jetpack.cwd('./app');

@@ -4,7 +4,7 @@ export class Space {
     constructor(width, height) {
         this.width = width
         this.height = height
-        this.map = _.times(width, ()=>{return _.times(height, _.constant(null))})
+        this.map = _.times(width, () => _.times(height, _.constant(null)))
         this.objects = []
     }
     checkExist(obj) {
@@ -33,13 +33,17 @@ export class Space {
         }
         return false
     }
-    updateObjPosition(obj) {
-        if (this.checkExist(obj)) {
-            const oldPosX = this.objects[obj.id].position.x
-            const oldPosY = this.objects[obj.id].position.y
-            if (_.isNull(this.map[obj.position.x][obj.position.y])) {
+    onObjectPositionUpdated(position, objId) {
+        const oldObj = this.objects[objId]
+        if (!this.checkExist(oldObj)) {
+            const oldPosX = oldObj.position.x
+            const oldPosY = oldObj.position.y
+            console.log({ x: oldPosX, y: oldPosY })
+            if (_.isNull(this.map[position.x][position.y])) {
+                console.log(3)
                 this.map[oldPosX][oldPosY] = null
-                this.map[obj.position.x][obj.position.y] = obj.id
+                this.map[position.x][position.y] = objId
+                oldObj.position = position
                 return true
             }
         }

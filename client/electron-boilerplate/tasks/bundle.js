@@ -2,6 +2,8 @@ const path = require('path');
 const jetpack = require('fs-jetpack');
 const rollup = require('rollup').rollup;
 
+const babel = require("rollup-plugin-babel");
+
 const nodeBuiltInModules = ['assert', 'buffer', 'child_process', 'cluster',
   'console', 'constants', 'crypto', 'dgram', 'dns', 'domain', 'events',
   'fs', 'http', 'https', 'module', 'net', 'os', 'path', 'process', 'punycode',
@@ -27,6 +29,7 @@ module.exports = (src, dest, opts) => {
 
   const plugins = [
     // Add rollup plugins here
+    babel()
   ];
 
   return rollup({
