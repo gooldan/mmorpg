@@ -8,6 +8,8 @@ import './helpers/external_links.js';
 import { remote } from 'electron';
 import jetpack from 'fs-jetpack';
 import { greet } from './hello_world/hello_world';
+import {Space} from './engine/space'
+import {Renderer} from './render/render'
 import env from './env';
 
 const app = remote.app;
@@ -23,8 +25,13 @@ const osMap = {
   linux: 'Linux',
 };
 
-document.querySelector('#greet').innerHTML = greet();
-document.querySelector('#os').innerHTML = osMap[process.platform];
-document.querySelector('#author').innerHTML = manifest.author;
-document.querySelector('#env').innerHTML = env.name;
-document.querySelector('#electron-version').innerHTML = process.versions.electron;
+let currentSpace = new Space(50,50)
+currentSpace.addObject({position:{x:1,y:3},id:115,drawMyself:(ctx,rect)=>{
+   ctx.fillStyle="#FF0000";
+   ctx.fillRect(rect.x,rect.y,rect.width,rect.height)
+   ctx.fillStyle="black"
+  }})
+let canvas = document.getElementById('render');
+let ctx = canvas.getContext('2d');
+let render = new Renderer(ctx,currentSpace)
+render.onRenderUpdate()

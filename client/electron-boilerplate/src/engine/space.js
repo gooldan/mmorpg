@@ -1,10 +1,10 @@
 import _ from "lodash"
 
-class Space {
+export class Space {
     constructor(width, height) {
         this.width = width
         this.height = height
-        this.map = _.times(width, _.times(height, _.constant(null)))
+        this.map = _.times(width, ()=>{return _.times(height, _.constant(null))})
         this.objects = []
     }
     checkExist(obj) {
@@ -47,4 +47,3 @@ class Space {
     }
 }
 
-export default Space
