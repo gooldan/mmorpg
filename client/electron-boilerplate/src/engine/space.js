@@ -33,12 +33,15 @@ export class Space {
         }
         return false
     }
+    checkBoundaries(x, y) {
+        return x >= 0 && x < this.width && y >= 0 && y < this.height
+    }
     onObjectPositionUpdated(position, objId) {
         const oldObj = this.objects[objId]
         if (!this.checkExist(oldObj)) {
             const oldPosX = oldObj.position.x
             const oldPosY = oldObj.position.y
-            if (_.isNull(this.map[position.x][position.y])) {
+            if (this.checkBoundaries(position.x, position.y) && _.isNull(this.map[position.x][position.y])) {
                 this.map[oldPosX][oldPosY] = null
                 this.map[position.x][position.y] = objId
                 oldObj.position = position

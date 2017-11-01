@@ -27,7 +27,7 @@ const osMap = {
     linux: "Linux",
 }
 
-const currentSpace = new Space(10, 10)
+const currentSpace = new Space(15, 15)
 const userObj = {
     position: { x: 1, y: 3 },
     id: 115,
@@ -41,7 +41,84 @@ const userObj = {
         this.position.y = y
     },
 }
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+}
+function go(obj, gameEngine) {
+    const x = obj.position.x + getRandomInt(-1, 2)
+    const y = obj.position.y + getRandomInt(-1, 2)
+    gameEngine.onObjectUpdated(obj.id, "pos", { position: { x, y } })
+    setTimeout(() => { go(obj, gameEngine) }, getRandomInt(100, 1500))
+}
+const userObj12 = {
+    engine: undefined,
+    position: { x: 5, y: 4 },
+    id: 110,
+    drawMyself: (ctx, rect) => {
+        ctx.fillStyle = "#00FF00"
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+        ctx.fillStyle = "black"
+    },
+    go: () => {
+
+    },
+    start: () => {
+        go()
+    },
+}
+const userObj13 = {
+    engine: undefined,
+    position: { x: 5, y: 8 },
+    id: 113,
+    drawMyself: (ctx, rect) => {
+        ctx.fillStyle = "#00FF00"
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+        ctx.fillStyle = "black"
+    },
+    go: () => {
+
+    },
+    start: () => {
+        go()
+    },
+}
+const userObj15 = {
+    engine: undefined,
+    position: { x: 7, y: 9 },
+    id: 150,
+    drawMyself: (ctx, rect) => {
+        ctx.fillStyle = "#00FF00"
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+        ctx.fillStyle = "black"
+    },
+    go: () => {
+
+    },
+    start: () => {
+        go()
+    },
+}
+const userObj16 = {
+    engine: undefined,
+    position: { x: 10, y: 4 },
+    id: 170,
+    drawMyself: (ctx, rect) => {
+        ctx.fillStyle = "#00FF00"
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+        ctx.fillStyle = "black"
+    },
+    go: () => {
+
+    },
+    start: () => {
+        go()
+    },
+}
 currentSpace.addObject(userObj)
+currentSpace.addObject(userObj12)
+currentSpace.addObject(userObj13)
+currentSpace.addObject(userObj15)
+currentSpace.addObject(userObj16)
 const canvas = document.getElementById("render")
 const ctx = canvas.getContext("2d")
 const render = new Renderer(ctx, currentSpace)
@@ -49,4 +126,8 @@ const render = new Renderer(ctx, currentSpace)
 const gameEngine = new GameEngine(userObj, currentSpace, render)
 const userInput = new UserInput(window, gameEngine)
 userInput.start(userObj)
+go(userObj12, gameEngine)
+go(userObj13, gameEngine)
+go(userObj15, gameEngine)
+go(userObj16, gameEngine)
 gameEngine.start()
