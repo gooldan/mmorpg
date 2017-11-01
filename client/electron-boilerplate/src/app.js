@@ -27,7 +27,7 @@ const osMap = {
     linux: "Linux",
 }
 
-const currentSpace = new Space(15, 15)
+const currentSpace = new Space(10, 10)
 const userObj = {
     position: { x: 1, y: 3 },
     id: 115,

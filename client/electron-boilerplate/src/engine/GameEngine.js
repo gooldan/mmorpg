@@ -34,6 +34,6 @@ export class GameEngine {
         this.renderObject.onRenderUpdate()
     }
     start() {
-        this.gameTimer = setInterval(this.onGameTick.bind(this), 500)
+        this.renderObject.start()
     }
 }

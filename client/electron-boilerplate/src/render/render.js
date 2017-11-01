@@ -34,5 +34,9 @@ export class Renderer {
             }
         }
         this.ctx.stroke()
+        requestAnimationFrame(() => this.onRenderUpdate())
+    }
+    start() {
+        this.onRenderUpdate()
     }
 }

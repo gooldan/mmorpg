@@ -9,14 +9,12 @@ export class UserInput {
     }
     start(obj) {
         this.obj = obj
-        this.target.addEventListener("keyup", this.onKeyEvent.bind(this), false)
+        this.target.addEventListener("keyup", (event) => { this.onKeyEvent(event) }, false)
     }
     onKeyEvent(event) {
         if (!_.isNull(this.obj)) {
-            console.log(this.obj)
             const newPos = { ...this.obj.position }
             const { key } = event
-            console.log(key)
             switch (key) {
             case "w":
                 newPos.y -= 1
@@ -37,7 +35,6 @@ export class UserInput {
         }
     }
     objectPositionChanged(newPos) {
-        console.log(newPos)
         this.obj = this.engine.onObjectUpdated(this.obj.id, "pos", { position: newPos })
     }
 }

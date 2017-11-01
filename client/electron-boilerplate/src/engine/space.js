@@ -38,9 +38,7 @@ export class Space {
         if (!this.checkExist(oldObj)) {
             const oldPosX = oldObj.position.x
             const oldPosY = oldObj.position.y
-            console.log({ x: oldPosX, y: oldPosY })
             if (_.isNull(this.map[position.x][position.y])) {
-                console.log(3)
                 this.map[oldPosX][oldPosY] = null
                 this.map[position.x][position.y] = objId
                 oldObj.position = position
