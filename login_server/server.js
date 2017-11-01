@@ -25,7 +25,7 @@ io.on('connection', function (socket) {
       Profile.findOne({'local.username': username, 'local.password': pass}, (err, user) => {
          if (user) {
             let token = createToken();
-            user.token = createToken();
+            user.token = token;
             socket.emit('token', token, Servers.host, Servers.port);
          } else {
             let newUser = new Profile();
