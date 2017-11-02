@@ -15,6 +15,7 @@ import { UserInput } from "./control/UserInput"
 import { GameEngine } from "./engine/GameEngine"
 import { BaseObject } from "./entity/BaseObject"
 import env from "./env"
+import _ from "lodash"
 
 const app = remote.app
 const appDir = jetpack.cwd(app.getAppPath())
@@ -61,9 +62,13 @@ document.getElementById("conn").addEventListener("click", () => {
     socket.emit("login", "db5ae68d56e2e82df8aef4b4fecb8efc774c6814e6d21bb1fce742a5e94fc966")
     socket.on("loaded", (data) => {
         if (data.ret === "OK") {
-            const obj = new BaseObject(data.objects[0].id, data.objects[0].position.x, data.objects[0].position.y, defaultDraw)
-            objects.push(obj)
-            currentSpace.addObject(obj)
+            const { objects } = data
+            _.map(objects, (obj) => {
+                console.log(obj)
+                const newObj = new BaseObject(obj.id, obj.position.x, obj.position.y, defaultDraw)
+                objects.push(newObj)
+                currentSpace.addObject(newObj)
+            })
             gameEngine.onSpaceUpdated(currentSpace)
         }
     })
