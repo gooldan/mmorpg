@@ -21,13 +21,41 @@ db.once('open', () => {
 let Servers = {host: 'localhost', port: '8081'};
 
 io.on('connection', function (socket) {
+   let user = undefined;
    socket.on('login', (token) => {
-      Profile.findOne({'local.token': token}, (err, user) => {
-         if (user) {
-            // USER 
+      Profile.findOne({'local.token': token}, (err, u) => {
+         if (u) {
+            user = u;
+            /*
+            *
+            * Отправить карту
+            *
+            * */
          } else {
          }
       });
+   });
+
+   socket.on('move', (side) => {
+      /*
+      * Сделать что-то с персом
+      * */
+      // io.emit('update object', id, new_object);
+   });
+
+   socket.on('hit', () => {
+      /*
+      * Игровая логика
+      * */
+
+      // io.emit('update object', id, new_object);
+   });
+
+   socket.on('update map', () => {
+      /*
+      * Отправить всю карту заного
+      * */
+      
    });
 });
 
