@@ -1,8 +1,7 @@
 // import _ from "lodash"
 
 export class GameEngine {
-    constructor(userObject, spaceObject) {
-        this.userObj = userObject
+    constructor(spaceObject) {
         this.spaceObject = spaceObject
         this.gameTimer = null
     }
@@ -16,7 +15,6 @@ export class GameEngine {
         default:
             break
         }
-        return this.userObj
     }
     onSpaceUpdated(newSpace) {
         this.spaceObject = newSpace

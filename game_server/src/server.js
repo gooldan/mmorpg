@@ -21,12 +21,13 @@ db.once('open', () => {
 });
 
 let map = undefined;
-    require('./initServer')((lMap) => {
-    map = lMap;
+const currentSpace = new Space(15,15)
+require('./initServer')((lMap) => {
+map = lMap;
+currentSpace.loadMap(map)
 })
 
 let Servers = {host: 'localhost', port: '8081'};
-const currentSpace = new Space(15,15)
 const gameEngine = new GameEngine(currentSpace)
 const objects = []
 io.on('connection', function (socket) {
@@ -37,8 +38,10 @@ io.on('connection', function (socket) {
             user = u;
             const position = user.hero.location.coordinates
             const newObject = new BaseObject(user.hero.id, position.x, position.y)
+            console.log(newObject)
             objects.push(newObject)
-            currentSpace.addObject(newObject)
+            currentSpace.addObject(newObject)            
+            socket.emit("loaded",{ret:"OK", objects:objects})
             /*
             *
             * Отправить карту
@@ -70,11 +73,7 @@ io.on('connection', function (socket) {
       * Отправить всю карту заного
       * */
       
-    });
-
-   socket.on('disconnect', function () {
-        io.emit('user disconnected');
-    });
+   });
 });
 
 function createToken() {

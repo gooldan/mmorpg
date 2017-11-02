@@ -30,7 +30,8 @@ var Profile = new Schema({
          max_items: {type: Number, default: 10},
          items: [{type: ObjectId}]
       },
-      money: {type: Number, default: 0}
+      money: {type: Number, default: 0},
+      id:{type: Number, unique:true}
    }
 });
 

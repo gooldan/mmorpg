@@ -11,7 +11,7 @@ module.exports = function(callback) {
             var splitSplitData = splitData[i].split('')
             for (var j = 0; j < splitData[i].length; j++)
             {
-                map[i][j] = splitSplitData[i]
+                map[i][j] = splitSplitData[j]
             }
         }
 
