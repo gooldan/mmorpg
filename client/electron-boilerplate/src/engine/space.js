@@ -13,7 +13,7 @@ export class Space {
     loadMap(map) {
         for (let i = 0; i < this.width; ++i) {
             for (let j = 0; j < this.height; ++j) {
-                this.map = map[i][j]
+                this.map[i][j] = map[i][j] === 0 ? null : 1
             }
         }
     }

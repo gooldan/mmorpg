@@ -12,6 +12,7 @@ import { Space } from "./engine/space"
 import { Renderer } from "./render/render"
 import { UserInput } from "./control/UserInput"
 import { GameEngine } from "./engine/GameEngine"
+import { BaseObject } from "./entity/BaseObject"
 import env from "./env"
 
 const app = remote.app
@@ -28,19 +29,13 @@ const osMap = {
 }
 
 const currentSpace = new Space(15, 15)
-const userObj = {
-    position: { x: 1, y: 3 },
-    id: 115,
-    drawMyself: (ctx, rect) => {
-        ctx.fillStyle = "#FF0000"
-        ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
-        ctx.fillStyle = "black"
-    },
-    updatePosition: (x, y) => {
-        this.position.x = x
-        this.position.y = y
-    },
+const defaultDraw = (ctx, rect) => {
+    ctx.fillStyle = "#FF0000"
+    ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+    ctx.fillStyle = "black"
 }
+const userObj = new BaseObject(115, 1, 3, defaultDraw)
+
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
 }

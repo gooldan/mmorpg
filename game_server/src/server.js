@@ -20,6 +20,7 @@ db.once('open', () => {
    console.log(`Connected to Mongo at: ${new Date()}`)
 });
 
+require('./initServer') ()
 
 let Servers = {host: 'localhost', port: '8081'};
 const currentSpace = new Space(15,15)
@@ -66,7 +67,11 @@ io.on('connection', function (socket) {
       * Отправить всю карту заного
       * */
       
-   });
+    });
+
+   socket.on('disconnect', function () {
+        io.emit('user disconnected');
+    });
 });
 
 function createToken() {

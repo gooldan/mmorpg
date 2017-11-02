@@ -19,7 +19,9 @@ db.once('open', () => {
 });
 
 let Servers = {host: 'localhost', port: '8081'};
-
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+}
 io.on('connection', function (socket) {
    socket.on('login', (username, pass) => {
       Profile.findOne({'local.username': username, 'local.password': pass}, (err, user) => {
@@ -33,6 +35,7 @@ io.on('connection', function (socket) {
             newUser.local.username = username;
             newUser.local.password = pass;
             newUser.local.token = token;
+            newUser.hero.id = getRandomInt(0,100000)
             newUser.save((err) => {
                if (err) {}
                else {
