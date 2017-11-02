@@ -20,7 +20,10 @@ db.once('open', () => {
    console.log(`Connected to Mongo at: ${new Date()}`)
 });
 
-require('./initServer') ()
+let map = undefined;
+    require('./initServer')((lMap) => {
+    map = lMap;
+})
 
 let Servers = {host: 'localhost', port: '8081'};
 const currentSpace = new Space(15,15)

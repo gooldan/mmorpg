@@ -1,6 +1,7 @@
-const _ = require("lodash")
+const _ = require("lodash"),
+Location = require('./models/Location');
 
-module.exports = function() {
+module.exports = function(callback) {
     var fs = require('fs');
     fs.readFile('./map.txt', "utf8", function(err, data) {
         var splitData = data.split('\n');
@@ -13,6 +14,16 @@ module.exports = function() {
                 map[i][j] = splitSplitData[i]
             }
         }
+
+        Location.findOne({name: "forest"}, (err, location) => {
+            if (location) {
+                for (let i = 0; i < location.entity.length; i++) {
+                    map[location.entity[i].position.x][location.entity[i].position.y] = location.entity[i].id
+                }
+
+                callback(map)
+            }
+        })
     });
 }
 
