@@ -50,5 +50,11 @@ export class Space {
         }
         return false
     }
+    onObjectMoved(delta, objId) {
+        const { position } = this.objects[objId]
+        this.map[position.x][position.y] = null
+        this.map[position.x + delta.x][position.y + delta.y] = objId
+        this.objects[objId].position = { x: position.x + delta.x, y: position.y + delta.y }
+    }
 }
 

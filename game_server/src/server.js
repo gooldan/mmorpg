@@ -36,12 +36,16 @@ io.on('connection', function (socket) {
       Profile.findOne({'local.token': token}, (err, u) => {
          if (u) {
             user = u;
+            if(objects.length > 0 && objects.find((elem) =>{ return elem.id === user.hero.id})!==undefined) {
+                return
+            }
             const position = user.hero.location.coordinates
             const newObject = new BaseObject(user.hero.id, position.x, position.y)
             console.log(newObject)
-            objects.push(newObject)
             currentSpace.addObject(newObject)            
-            socket.emit("loaded",{ret:"OK", objects:objects})
+            objects.push(newObject)
+            socket.emit("enterWorld",{ret:"OK", type:"enterWorld", payload:{objects:objects, userObj:newObject}})
+            
             /*
             *
             * Отправить карту
@@ -52,8 +56,14 @@ io.on('connection', function (socket) {
       });
    });
 
-   socket.on('move', (objId, newPosition) => {
-      currentSpace.onObjectPositionUpdated(newPosition,objId)
+   socket.on('userObjMoved', (event) => {
+      const res = currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
+      if(res)
+      {
+          console.log("move")
+          console.log(objects)
+          socket.emit("objMoved", {ret:"OK", type:"objMoved", payload:event.payload})
+      }
       /*
       * Сделать что-то с персом
       * */
@@ -74,6 +84,19 @@ io.on('connection', function (socket) {
       * */
       
    });
+   socket.on('disconnect', (reason) => {
+        let objInd = -1
+        const obj = objects.find((elem, index) =>{ if(elem.id === user.hero.id) {
+            objInd = index
+            return elem.id === user.hero.id}})
+        if(obj!==undefined)
+        {
+            currentSpace.removeObject( obj)
+            objects.splice(objInd,1);        
+            console.log("disconnected")
+        }
+       
+   })
 });
 
 function createToken() {

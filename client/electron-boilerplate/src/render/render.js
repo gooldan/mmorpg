@@ -10,6 +10,21 @@ export class Renderer {
     onSpaceUpdated(space) {
         this.space = space
     }
+    getDefaultDraw(objType) {
+        const defaultDraw = currentfillStyle => (ctx, rect) => {
+            ctx.fillStyle = currentfillStyle
+            ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+            ctx.fillStyle = "black"
+        }
+        switch (objType) {
+        case "user":
+            return defaultDraw("#FF0000")
+        case "enemy":
+            return defaultDraw("#0000FF")
+        default:
+            return defaultDraw("#FFFFFF")
+        }
+    }
     onRenderUpdate() {
         const canvasWidth = this.ctx.canvas.clientWidth - 1
         const canvasHeight = this.ctx.canvas.clientHeight - 1

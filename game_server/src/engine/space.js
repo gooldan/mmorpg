@@ -13,7 +13,7 @@ export class Space {
     loadMap(map) {
         for (let i = 0; i < this.width; ++i) {
             for (let j = 0; j < this.height; ++j) {
-                this.map[i][j] = map[i][j] === 0 ? null : 1
+                this.map[i][j] = map[i][j] === '0' ? null : 1
             }
         }
     }
@@ -36,19 +36,26 @@ export class Space {
     checkBoundaries(x, y) {
         return x >= 0 && x < this.width && y >= 0 && y < this.height
     }
-    onObjectPositionUpdated(position, objId) {
+    onObjectPositionUpdated(delta, objId) {
         const oldObj = this.objects[objId]
         if (!this.checkExist(oldObj)) {
             const oldPosX = oldObj.position.x
             const oldPosY = oldObj.position.y
-            if (this.checkBoundaries(position.x, position.y) && _.isNull(this.map[position.x][position.y])) {
+            const newPosX = oldPosX + delta.x
+            const newPosY = oldPosY + delta.y
+            if (this.checkBoundaries(newPosX, newPosY) && _.isNull(this.map[newPosX][newPosY])) {
                 this.map[oldPosX][oldPosY] = null
-                this.map[position.x][position.y] = objId
-                oldObj.position = position
+                this.map[newPosX][newPosY] = objId
+                oldObj.position = {x:newPosX,y:newPosY}
                 return true
             }
         }
         return false
+    }
+    onObjectMoved(delta, objId) {
+        const { position } = this.objects[objId]
+        this.map[position.x][position.y] = null
+        this.map[position.x + delta.x][position.y + delta.y] = objId
     }
 }
 
