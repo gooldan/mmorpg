@@ -47,19 +47,23 @@ const osMap = {
 //     gameEngine.onObjectUpdated(obj.id, "pos", { position: { x, y } })
 //     setTimeout(() => { go(obj, gameEngine) }, getRandomInt(100, 1500))
 // }
-
+function gameLoop(window, renderObj) {
+    renderObj.onRenderUpdate()
+    window.requestAnimationFrame(function() {gameLoop(window, renderObj)})
+}
 
 document.getElementById("conn").addEventListener("click", () => {
     const currentSpace = new Space(15, 15)
     const canvas = document.getElementById("render")
     const ctx = canvas.getContext("2d")
-    const render = new Renderer(ctx, currentSpace)
+    const render = new Renderer(window, ctx, currentSpace)
     const gameEngine = new GameEngine(currentSpace, render)
     const userInput = new UserInput(window, gameEngine)
     const network = new ClientNetwork(gameEngine)
     gameEngine.setNetworkObject(network)
     gameEngine.setUserInput(userInput)
     const token = document.getElementById("token").value
+    gameLoop(window, render)
     gameEngine.start(token)
     // const socket = io("http://127.0.0.1:8081/")
     // socket.emit("login", "db5ae68d56e2e82df8aef4b4fecb8efc774c6814e6d21bb1fce742a5e94fc966")

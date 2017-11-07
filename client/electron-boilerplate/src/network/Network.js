@@ -20,6 +20,16 @@ export class ClientNetwork {
                 this.gameEngine.onNetworkEvent({ type: "objMoved", payload: data.payload })
             }
         })
+        this.socket.on("objectEnter", (data) => {
+            if (data.ret === "OK") {
+                this.gameEngine.onNetworkEvent({ type: "objectEnter", payload: data.payload })
+            }
+        })
+        this.socket.on("objectLeave", (data) => {
+            if (data.ret === "OK") {
+                this.gameEngine.onNetworkEvent({ type: "objectEnter", payload: data.payload })
+            }
+        })
     }
     login(token) {
         if (this.socket !== null) {

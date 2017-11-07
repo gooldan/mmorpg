@@ -38,11 +38,11 @@ export class GameEngine {
         if (newSpace !== undefined) {
             this.spaceObject = newSpace
         }
-        this.renderObject.onSpaceUpdated(this.spaceObject)
+        this.renderObject.onSpaceUpdated(this.spaceObject)        
         return this.spaceObject
     }
     onGameTick() {
-        this.renderObject.onRenderUpdate()
+        // this.renderObject.onRenderUpdate()
     }
     onUserEvent(event) {
         this.networkObject.eventOccured(event)
@@ -61,16 +61,30 @@ export class GameEngine {
             this.spaceObject.addObject(this.userObj)
             this.onSpaceUpdated()
             this.userInput.start()
-            this.renderObject.start()
-            break
-        }
-        default: {
+            // this.renderObject.start()
             break
         }
         case "objMoved": {
             const { objID, delta } = event.payload
             this.spaceObject.onObjectMoved(delta, objID)
             this.onSpaceUpdated()
+            break
+        }
+        case "objectEnter": {
+            const { objID, position } = event.payload
+            const newObj = new BaseObject(objID, position.x, position.y, this.renderObject.getDefaultDraw("enemy"))
+            this.spaceObject.addObject(newObj)
+            this.onSpaceUpdated()
+            break
+        }
+        case "objectkLeave": {
+            const { objID } = event.payload
+            this.spaceObject.removeObject(objID)
+            this.onSpaceUpdated()
+            break
+        }
+        default: {
+            break
         }
         }
     }

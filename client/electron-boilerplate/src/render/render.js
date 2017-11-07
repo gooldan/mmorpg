@@ -1,14 +1,19 @@
 import _ from "lodash"
 
 export class Renderer {
-    constructor(ctx, space) {
+    constructor(window, ctx, space) {
         this.factor = 10
         this.borderWidth = 1
         this.ctx = ctx
         this.space = space
+        this.window = window
+        this.drawCellBorder = () => { }
     }
     onSpaceUpdated(space) {
-        this.space = space
+        if (this.space !== space && space !== undefined) {
+            this.space = space
+        }
+        this.onRenderParamsUpdate()
     }
     getDefaultDraw(objType) {
         const defaultDraw = currentfillStyle => (ctx, rect) => {
@@ -25,33 +30,35 @@ export class Renderer {
             return defaultDraw("#FFFFFF")
         }
     }
-    onRenderUpdate() {
-        const canvasWidth = this.ctx.canvas.clientWidth - 1
-        const canvasHeight = this.ctx.canvas.clientHeight - 1
-        this.ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-        const colCount = this.space.width
-        const rowCount = this.space.height
-        const cellBoxWidth = (canvasWidth) / colCount
-        const cellBoxHeight = (canvasHeight) / rowCount
-        const drawCellBorder = (ctx, i, j) => {
+    onRenderParamsUpdate() {
+        this.canvasWidth = this.ctx.canvas.clientWidth - 1
+        this.canvasHeight = this.ctx.canvas.clientHeight - 1
+        
+        this.colCount = this.space.width
+        this.rowCount = this.space.height
+        const cellBoxWidth = (this.canvasWidth) / this.colCount
+        const cellBoxHeight = (this.canvasHeight) / this.rowCount
+        this.drawCellBorder = (ctx, i, j) => {
             const rect = {
                 x: i * cellBoxWidth, y: j * cellBoxHeight, width: cellBoxWidth, height: cellBoxHeight,
             }
             ctx.rect(rect.x, rect.y, rect.width, rect.height)
             return rect
         }
-        for (let i = 0; i < colCount; ++i) {
-            for (let j = 0; j < rowCount; ++j) {
-                const cellBox = drawCellBorder(this.ctx, i, j)
-                if (!_.isNull(this.space.map[i][j])) {
+    }
+    onRenderUpdate() {
+        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+        for (let i = 0; i < this.colCount; ++i) {
+            for (let j = 0; j < this.rowCount; ++j) {
+                const cellBox = this.drawCellBorder(this.ctx, i, j)
+                if (this.space.map[i][j] !== null) {
                     this.space.objects[this.space.map[i][j]].drawMyself(this.ctx, cellBox)
                 }
             }
         }
         this.ctx.stroke()
-        requestAnimationFrame(() => this.onRenderUpdate())
     }
     start() {
-        this.onRenderUpdate()
+        //this.onRenderUpdate()
     }
 }

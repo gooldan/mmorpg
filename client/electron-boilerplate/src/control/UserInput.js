@@ -8,7 +8,7 @@ export class UserInput {
         // window.addEventListener('keydown')
     }
     start() {
-        this.target.addEventListener("keyup", (event) => { this.onKeyEvent(event) }, false)
+        this.target.addEventListener("keydown", (event) => { this.onKeyEvent(event) }, false)
     }
     onKeyEvent(event) {
         const inputEvent = { type: "userObjMoved", payload: {} }

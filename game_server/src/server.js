@@ -41,11 +41,10 @@ io.on('connection', function (socket) {
             }
             const position = user.hero.location.coordinates
             const newObject = new BaseObject(user.hero.id, position.x, position.y)
-            console.log(newObject)
             currentSpace.addObject(newObject)            
             objects.push(newObject)
             socket.emit("enterWorld",{ret:"OK", type:"enterWorld", payload:{objects:objects, userObj:newObject}})
-            
+            socket.broadcast.emit('objectEnter', {ret:"OK", type:"objectEnter", payload:{objID:user.hero.id, position:position}})
             /*
             *
             * Отправить карту
@@ -60,9 +59,7 @@ io.on('connection', function (socket) {
       const res = currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
       if(res)
       {
-          console.log("move")
-          console.log(objects)
-          socket.emit("objMoved", {ret:"OK", type:"objMoved", payload:event.payload})
+          io.emit("objMoved", {ret:"OK", type:"objMoved", payload:event.payload})
       }
       /*
       * Сделать что-то с персом
@@ -94,6 +91,7 @@ io.on('connection', function (socket) {
             currentSpace.removeObject( obj)
             objects.splice(objInd,1);        
             console.log("disconnected")
+            socket.broadcast.emit('objectLeave', {ret:"OK", type:"objectLeave", payload:{objID:obj.id, position:obj.position}})
         }
        
    })

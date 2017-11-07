@@ -25,10 +25,11 @@ export class Space {
         }
         return false
     }
-    removeObject(obj) {
+    removeObject(objID) {
+        const obj = this.objects[objID]
         if (!this.checkExist(obj)) {
             this.map[obj.position.x][obj.position.y] = null
-            delete this.objects[obj.id]
+            this.objects.splice(obj.id, 1)
             return true
         }
         return false
