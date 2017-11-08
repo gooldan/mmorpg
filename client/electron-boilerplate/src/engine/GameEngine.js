@@ -1,5 +1,6 @@
 // import _ from "lodash"
 import { BaseObject } from "./../entity/BaseObject"
+import { Orc } from "./../entity/orc"
 
 export class GameEngine {
     constructor(spaceObject, renderObject) {
@@ -57,7 +58,7 @@ export class GameEngine {
                     this.spaceObject.addObject(newObject)
                 }
             })
-            this.userObj = new BaseObject(userObj.id, userObj.position.x, userObj.position.y, this.renderObject.getDefaultDraw("user"))
+            this.userObj = new Orc(userObj.id, userObj.position.x, userObj.position.y, this.renderObject.getDefaultDraw("user"))
             this.spaceObject.addObject(this.userObj)
             this.onSpaceUpdated()
             this.userInput.start()
