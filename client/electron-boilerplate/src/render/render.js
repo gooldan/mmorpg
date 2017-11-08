@@ -33,7 +33,6 @@ export class Renderer {
     onRenderParamsUpdate() {
         this.canvasWidth = this.ctx.canvas.clientWidth - 1
         this.canvasHeight = this.ctx.canvas.clientHeight - 1
-        
         this.colCount = this.space.width
         this.rowCount = this.space.height
         const cellBoxWidth = (this.canvasWidth) / this.colCount
@@ -48,6 +47,7 @@ export class Renderer {
     }
     onRenderUpdate() {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+        this.ctx.beginPath()
         for (let i = 0; i < this.colCount; ++i) {
             for (let j = 0; j < this.rowCount; ++j) {
                 const cellBox = this.drawCellBorder(this.ctx, i, j)

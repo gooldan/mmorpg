@@ -38,7 +38,7 @@ export class GameEngine {
         if (newSpace !== undefined) {
             this.spaceObject = newSpace
         }
-        this.renderObject.onSpaceUpdated(this.spaceObject)        
+        this.renderObject.onSpaceUpdated(this.spaceObject)
         return this.spaceObject
     }
     onGameTick() {
@@ -77,7 +77,7 @@ export class GameEngine {
             this.onSpaceUpdated()
             break
         }
-        case "objectkLeave": {
+        case "objectLeave": {
             const { objID } = event.payload
             this.spaceObject.removeObject(objID)
             this.onSpaceUpdated()

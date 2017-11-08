@@ -8,7 +8,7 @@ export class Space {
         this.objects = []
     }
     checkExist(obj) {
-        return _.isUndefined(this.objects[obj.id])
+        return this.objects[obj.id] === undefined
     }
     loadMap(map) {
         for (let i = 0; i < this.width; ++i) {
@@ -42,7 +42,7 @@ export class Space {
         if (!this.checkExist(oldObj)) {
             const oldPosX = oldObj.position.x
             const oldPosY = oldObj.position.y
-            if (this.checkBoundaries(position.x, position.y) && _.isNull(this.map[position.x][position.y])) {
+            if (this.checkBoundaries(position.x, position.y) && this.map[position.x][position.y] === null) {
                 this.map[oldPosX][oldPosY] = null
                 this.map[position.x][position.y] = objId
                 oldObj.position = position
@@ -55,7 +55,8 @@ export class Space {
         const { position } = this.objects[objId]
         this.map[position.x][position.y] = null
         this.map[position.x + delta.x][position.y + delta.y] = objId
-        this.objects[objId].position = { x: position.x + delta.x, y: position.y + delta.y }
+        this.objects[objId].position.x = position.x + delta.x
+        this.objects[objId].position.y = position.y + delta.y
     }
 }
 

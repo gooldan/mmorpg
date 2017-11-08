@@ -51,8 +51,7 @@ function gameLoop(window, renderObj) {
     renderObj.onRenderUpdate()
     window.requestAnimationFrame(function() {gameLoop(window, renderObj)})
 }
-
-document.getElementById("conn").addEventListener("click", () => {
+function startProcess() {
     const currentSpace = new Space(15, 15)
     const canvas = document.getElementById("render")
     const ctx = canvas.getContext("2d")
@@ -65,18 +64,5 @@ document.getElementById("conn").addEventListener("click", () => {
     const token = document.getElementById("token").value
     gameLoop(window, render)
     gameEngine.start(token)
-    // const socket = io("http://127.0.0.1:8081/")
-    // socket.emit("login", "db5ae68d56e2e82df8aef4b4fecb8efc774c6814e6d21bb1fce742a5e94fc966")
-    // socket.on("loaded", (data) => {
-    //     if (data.ret === "OK") {
-    //         const { objects } = data
-    //         _.map(objects, (obj) => {
-    //             console.log(obj)
-    //             const newObj = new BaseObject(obj.id, obj.position.x, obj.position.y, defaultDraw)
-    //             objects.push(newObj)
-    //             currentSpace.addObject(newObj)
-    //         })
-    //         gameEngine.onSpaceUpdated(currentSpace)
-    //     }
-    // })
-})
+}
+document.getElementById("conn").addEventListener("click", startProcess)
