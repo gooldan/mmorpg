@@ -54,7 +54,12 @@ export class Renderer {
         for (let i = 0; i < this.colCount; ++i) {
             for (let j = 0; j < this.rowCount; ++j) {
                 const cellBox = this.drawCellBorder(this.ctx, i, j)
-                this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
+                try {
+                    this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
+                }
+                catch (err) {
+                    console.log(i, j, this.space.map[i][j].type, this.space.map[i][j].id)
+                }
             }
         }
         this.ctx.stroke()

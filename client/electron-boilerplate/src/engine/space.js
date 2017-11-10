@@ -7,20 +7,29 @@ export class Space {
         this.width = width
         this.height = height
         this.map = _.times(width, () => _.times(height, _.constant({type: 0, id: 0})))
-        for (let i = 0; i < width; i++) {
-            this.map[i][0] = {type: 0, id: 1}
-            this.map[i][width-1] = {type: 0, id: 1}
-            this.map[0][i] = {type: 0, id: 1}
-            this.map[height-1][i] = {type: 0, id: 1}
-        }
         this.objects = []
         this.objects[0] = {}
         this.objects[1] = {}
         this.objects[2] = {}
+        this.objects[3] = {}
+        this.objects[4] = {}
     }
+
     initDefaultObjects(renderer) {
         this.objects[0][0] = new BaseObject(0, undefined, undefined, renderer.getDefaultDraw("qwe"), 0)
-        this.objects[0][1] = new Mountain(1, undefined, undefined, renderer.getDefaultDraw("qwe"))
+        this.objects[3][0] = new Mountain(1, undefined, undefined, renderer.getDefaultDraw("qwe"))
+    }
+
+    reconstruct(width, height) {
+        this.width = width
+        this.height = height
+        this.map = _.times(width, () => _.times(height, _.constant({type: 0, id: 0})))
+        this.objects = []
+        this.objects[0] = {}
+        this.objects[1] = {}
+        this.objects[2] = {}
+        this.objects[3] = {}
+        this.objects[4] = {}
     }
 
     checkExist(obj) {

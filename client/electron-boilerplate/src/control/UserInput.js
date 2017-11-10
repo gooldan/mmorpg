@@ -5,10 +5,14 @@ export class UserInput {
         this.target = window
         this.engine = engine
         this.eventHandler = handlerFunc
+        this.keydownEventLoad = false
         // window.addEventListener('keydown')
     }
     start() {
-        this.target.addEventListener("keydown", (event) => { this.onKeyEvent(event) }, false)
+        if (!this.keydownEventLoad) {
+            this.target.addEventListener("keydown", (event) => { this.onKeyEvent(event) }, false)
+            this.keydownEventLoad = true
+        }
     }
     onKeyEvent(event) {
         const inputEvent = { type: "userObjMoved", payload: {} }

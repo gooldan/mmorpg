@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema,
    ObjectId = Schema.ObjectId;
 
-var Profile = new Schema({
+var ProfileScheme = new Schema({
    local: {
       username: {type: String, required: true},
       password: {type: String, required: true},
@@ -15,7 +15,7 @@ var Profile = new Schema({
       exp: {type: Number, min: 0, max: 100, default: 0},
       level: {type: Number, min: 1, max: 5, default: 1},
       location: {
-         id: ObjectId,
+         id: {type: String},
          coordinates: {
             x: Number,
             y: Number
@@ -35,4 +35,4 @@ var Profile = new Schema({
    }
 });
 
-module.exports = mongoose.model('Profile', Profile);
+export let Profile = mongoose.model('Profile', ProfileScheme);
