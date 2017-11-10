@@ -20,6 +20,10 @@ db.once('open', () => {
    console.log(`Connected to Mongo at: ${new Date()}`)
 });
 
+const locationIDs = []
+
+const Locations = {};
+
 const currentSpace = new Space(15, 15)
 let map = undefined
 let Servers = {host: 'localhost', port: '8081'}
@@ -50,7 +54,7 @@ io.on('connection', function (socket) {
                return
             }
             const position = user.hero.location.coordinates
-            const newObject = new BaseObject(user._id, position.x, position.y, undefined, "Player")
+            const newObject = new BaseObject(user._id, position.x, position.y, undefined, 2)
             currentSpace.addObject(newObject)
             objects.push(newObject)
             socket.emit("enterWorld", {ret: "OK", type: "enterWorld", payload: {objects: objects, userObj: newObject, entityObjects: entityObjects}})

@@ -12,7 +12,8 @@ var Location = new Schema({
       position: {
          x: {type: Number},
          y: {type: Number}
-      }
+      },
+      states: {}
    }],
    max_players: {type: Number, default: 4}
 });
