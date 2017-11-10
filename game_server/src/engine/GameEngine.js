@@ -2,9 +2,25 @@
 
 export class GameEngine {
     constructor(spaceObject) {
-        this.spaceObject = spaceObject
-        this.gameTimer = null
+        if(arguments.length === 1) {
+            this.spaceObject = spaceObject
+            this.loadSpace = true
+            this.gameTimer = null
+        }
+        else if (arguments.length === 0) {
+            this.loadSpace = false
+            this.gameTimer = null
+        }
+        else {
+            this.loadSpace = false
+        }
     }
+
+    LoadSpace(spaceObject) {
+        this.spaceObject = spaceObject
+        this.loadSpace = true
+    }
+
     onObjectUpdated(objId, updateType, updatePayload) {
         switch (updateType) {
         case "pos":

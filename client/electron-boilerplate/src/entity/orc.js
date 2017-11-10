@@ -2,7 +2,7 @@ import { BaseObject } from "./BaseObject"
 
 export class Orc extends BaseObject {
     constructor(id, x, y, drawFunc) {
-        super(id, x, y)
+        super(id, x, y, undefined, 2)
         this.drawFunc = drawFunc
         this.state = 0
         this.baseImage = new Image()

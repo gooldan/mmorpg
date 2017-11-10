@@ -6,6 +6,7 @@ export class Renderer {
         this.borderWidth = 1
         this.ctx = ctx
         this.space = space
+        space.initDefaultObjects(this)
         this.window = window
         this.drawCellBorder = () => { }
     }
@@ -22,12 +23,14 @@ export class Renderer {
             ctx.fillStyle = "black"
         }
         switch (objType) {
-        case "user":
-            return defaultDraw("#FF0000")
-        case "enemy":
-            return defaultDraw("#0000FF")
-        default:
-            return defaultDraw("#FFFFFF")
+            case "user":
+                return defaultDraw("#FF0000")
+            case "enemy":
+                return defaultDraw("#0000FF")
+            case "tree":
+                return defaultDraw("#00FF00")
+            default:
+                return defaultDraw("#FFFFFF")
         }
     }
     onRenderParamsUpdate() {
@@ -51,9 +54,7 @@ export class Renderer {
         for (let i = 0; i < this.colCount; ++i) {
             for (let j = 0; j < this.rowCount; ++j) {
                 const cellBox = this.drawCellBorder(this.ctx, i, j)
-                if (this.space.map[i][j] !== null) {
-                    this.space.objects[this.space.map[i][j]].drawMyself(this.ctx, cellBox)
-                }
+                this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
             }
         }
         this.ctx.stroke()
