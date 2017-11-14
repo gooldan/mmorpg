@@ -9,11 +9,13 @@ export class Renderer {
         space.initDefaultObjects(this)
         this.window = window
         this.drawCellBorder = () => { }
+        this.counter = 0
     }
     onSpaceUpdated(space) {
         if (this.space !== space && space !== undefined) {
             this.space = space
         }
+        this.counter = 0
         this.onRenderParamsUpdate()
     }
     getDefaultDraw(objType) {
@@ -23,14 +25,14 @@ export class Renderer {
             ctx.fillStyle = "black"
         }
         switch (objType) {
-            case "user":
-                return defaultDraw("#FF0000")
-            case "enemy":
-                return defaultDraw("#0000FF")
-            case "tree":
-                return defaultDraw("#00FF00")
-            default:
-                return defaultDraw("#FFFFFF")
+        case "user":
+            return defaultDraw("#FF0000")
+        case "enemy":
+            return defaultDraw("#0000FF")
+        case "tree":
+            return defaultDraw("#00FF00")
+        default:
+            return defaultDraw("#FFFFFF")
         }
     }
     onRenderParamsUpdate() {
@@ -51,20 +53,32 @@ export class Renderer {
     onRenderUpdate() {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
         this.ctx.beginPath()
-        for (let i = 0; i < this.colCount; ++i) {
-            for (let j = 0; j < this.rowCount; ++j) {
-                const cellBox = this.drawCellBorder(this.ctx, i, j)
-                try {
-                    this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
-                }
-                catch (err) {
-                    console.log(i, j, this.space.map[i][j].type, this.space.map[i][j].id)
+        if (this.space.unloaded === true) {
+            this.counter += 1
+            const rect = {
+                x: 10, y: (this.canvasHeight / 2) - 5, width: this.canvasWidth - 10, height: 10,
+            }
+            this.ctx.rect(rect.x, rect.y, rect.width, rect.height)
+            rect.width = (rect.width / 30) * this.counter
+            this.getDefaultDraw("enemy")(this.ctx, rect)
+            if (this.counter === 29) {
+                this.counter = 0
+            }
+        } else {
+            for (let i = 0; i < this.colCount; ++i) {
+                for (let j = 0; j < this.rowCount; ++j) {
+                    const cellBox = this.drawCellBorder(this.ctx, i, j)
+                    try {
+                        this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
+                    } catch (err) {
+                        console.log(i, j, this.space.map[i][j].type, this.space.map[i][j].id)
+                    }
                 }
             }
         }
         this.ctx.stroke()
     }
     start() {
-        //this.onRenderUpdate()
+        // this.onRenderUpdate()
     }
 }

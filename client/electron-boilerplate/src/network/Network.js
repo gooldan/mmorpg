@@ -4,6 +4,7 @@ export class ClientNetwork {
     constructor(gameEngine) {
         this.socket = null
         this.gameEngine = gameEngine
+        this.logNet = true
     }
     connectToServer(ip, port) {
         this.socket = io(`http://${ip}:${port}/`)
@@ -12,22 +13,42 @@ export class ClientNetwork {
     bindToEvents() {
         this.socket.on("enterWorld", (data) => {
             if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("enterWorld: ", data.payload)
+                }
                 this.gameEngine.onNetworkEvent({ type: "enterWorld", payload: data.payload })
+            }
+        })
+        this.socket.on("leaveWorld", (data) => {
+            if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("leaveWorld: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "leaveWorld", payload: data.payload })
             }
         })
         this.socket.on("objMoved", (data) => {
             if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("objMoved: ", data.payload)
+                }
                 this.gameEngine.onNetworkEvent({ type: "objMoved", payload: data.payload })
             }
         })
         this.socket.on("objectEnter", (data) => {
             if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("objectEnter: ", data.payload)
+                }
                 this.gameEngine.onNetworkEvent({ type: "objectEnter", payload: data.payload })
             }
         })
         this.socket.on("objectLeave", (data) => {
             if (data.ret === "OK") {
-                this.gameEngine.onNetworkEvent({ type: "objectEnter", payload: data.payload })
+                if (this.logNet) {
+                    console.log("objectLeave: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "objectLeave", payload: data.payload })
             }
         })
     }

@@ -106,14 +106,15 @@ io.on('connection', function (socket) {
             }
         });
     });
-
+    let costyl = false
     socket.on('userObjMoved', (event) => {
         console.log(user._id + " (" + event.payload.objID + ") moved delta:(" + event.payload.delta.x + ", " + event.payload.delta.y + ")")
         const res = location.currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
         if (res.res) {
             if (res.portal === undefined)
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })
-            else {
+            else if (!costyl) {
+                costyl = true
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })
                 let portal = location.objects[4][res.portal]
                 Location.findOne({
@@ -125,7 +126,17 @@ io.on('connection', function (socket) {
                 }, (err, loca) => {
                     if (loca) {
                         // DISCONNECT
+                        socket.emit("leaveWorld", {
+                            ret: "OK",
+                            type: "leaveWorld",
+                            payload: {
+                            }
+                        })
+                        
                         const obj = location.objects[2][user._id]
+                        if(obj == undefined) {
+                            return
+                        }
                         location.currentSpace.removeObject(obj)
                         delete location.objects[2][user._id]
                         socket.broadcast.to(locationID).emit('objectLeave', {
@@ -134,36 +145,40 @@ io.on('connection', function (socket) {
                             payload: { objID: obj.id, position: obj.position, objType: 2 }
                         })
                         socket.leave(locationID)
+                        
+                        const delayedEnter = () => {
+                            // CONNECT
+                            locationID = loca._id
+                            location = Locations[locationID]
+                            socket.join(locationID)
 
-                        // CONNECT
-                        locationID = loca._id
-                        location = Locations[locationID]
-                        socket.join(locationID)
+                            let newPortal = location.objects[4][portal.states.to]
 
-                        let newPortal = location.objects[4][portal.states.to]
+                            const position = newPortal.position
+                            const newObject = new BaseObject(user._id, position.x, position.y, undefined, 2)
 
-                        const position = newPortal.position
-                        const newObject = new BaseObject(user._id, position.x, position.y, undefined, 2)
+                            location.currentSpace.addObject(newObject)
+                            location.objects[2][newObject.id] = newObject
 
-                        location.currentSpace.addObject(newObject)
-                        location.objects[2][newObject.id] = newObject
+                            socket.emit("enterWorld", {
+                                ret: "OK",
+                                type: "enterWorld",
+                                payload: {
+                                    objects: location.objects,
+                                    userObj: newObject,
+                                    mountains: location.mountains,
+                                    locationID: locationID
+                                }
+                            })
 
-                        socket.emit("enterWorld", {
-                            ret: "OK",
-                            type: "enterWorld",
-                            payload: {
-                                objects: location.objects,
-                                userObj: newObject,
-                                mountains: location.mountains,
-                                locationID: locationID
-                            }
-                        })
-
-                        socket.broadcast.to(locationID).emit('objectEnter', {
-                            ret: "OK",
-                            type: "objectEnter",
-                            payload: { objID: user._id, position: position, objType: 2 }
-                        })
+                            socket.broadcast.to(locationID).emit('objectEnter', {
+                                ret: "OK",
+                                type: "objectEnter",
+                                payload: { objID: user._id, position: position, objType: 2 }
+                            })
+                            costyl = false
+                        }
+                        setTimeout(delayedEnter,1000)                        
                     }
                 })
             }
