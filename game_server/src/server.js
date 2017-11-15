@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
                 console.log(user._id + " CONNECTED. token: " + token)
 
                 const position = user.hero.location.coordinates
-                const newObject = new BaseObject(user._id, position.x, position.y, 2)
+                const newObject = new BaseObject(user._id, position.x, position.y, 2, user.hero.hp)
 
                 location.currentSpace.addObject(newObject)
                 location.objects[2][newObject.id] = newObject
@@ -75,7 +75,7 @@ io.on('connection', function (socket) {
                 socket.broadcast.to(locationID).emit('objectEnter', {
                     ret: "OK",
                     type: "objectEnter",
-                    payload: { objID: user._id, position: newObject.position, objType: 2 }
+                    payload: { objID: user._id, position: newObject.position, objType: 2, hp: newObject.hp }
                 })
                 /*
                  *
