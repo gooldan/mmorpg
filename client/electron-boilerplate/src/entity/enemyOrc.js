@@ -1,13 +1,13 @@
 import { BaseObject } from "./BaseObject"
 
 const statusBoxHeight = 15
-export class Orc extends BaseObject {
+export class EnemyOrc extends BaseObject {
     constructor(id, x, y, hp, level, drawFunc) {
         super(id, x, y, undefined, 2)
         this.drawFunc = drawFunc
         this.state = 0
         this.baseImage = new Image()
-        this.baseImage.src = "res/lumber.png"
+        this.baseImage.src = "res/lumber_enemy.png"
         this.drawMyself = this.drawBody
         this.hp = hp
         this.level = level

@@ -1,7 +1,7 @@
 import _ from "lodash"
 
 export class Renderer {
-    constructor(window, ctx, space) {
+    constructor(window, ctx, space, camera) {
         this.factor = 10
         this.borderWidth = 1
         this.ctx = ctx
@@ -10,6 +10,12 @@ export class Renderer {
         this.window = window
         this.drawCellBorder = () => { }
         this.counter = 0
+        this.camera = camera
+        this.onCameraParametersChanged()
+        this.ctx.font = "13px Arial"
+    }
+    onCameraParametersChanged() {
+        this.currentView = this.camera.getCurrentView()
     }
     onSpaceUpdated(space) {
         if (this.space !== space && space !== undefined) {
@@ -40,8 +46,9 @@ export class Renderer {
         this.canvasHeight = this.ctx.canvas.clientHeight - 1
         this.colCount = this.space.width
         this.rowCount = this.space.height
-        const cellBoxWidth = (this.canvasWidth) / this.colCount
-        const cellBoxHeight = (this.canvasHeight) / this.rowCount
+        const cellBoxWidth = (this.canvasWidth) / this.currentView.width
+        const cellBoxHeight = (this.canvasHeight) / this.currentView.height
+
         this.drawCellBorder = (ctx, i, j) => {
             const rect = {
                 x: i * cellBoxWidth, y: j * cellBoxHeight, width: cellBoxWidth, height: cellBoxHeight,
@@ -65,14 +72,14 @@ export class Renderer {
                 this.counter = 0
             }
         } else {
-            for (let i = 0; i < this.colCount; ++i) {
-                for (let j = 0; j < this.rowCount; ++j) {
+            for (let i = 0; i < this.currentView.width; ++i) {
+                for (let j = 0; j < this.currentView.height; ++j) {
                     const cellBox = this.drawCellBorder(this.ctx, i, j)
-                    try {
-                        this.space.objects[this.space.map[i][j].type][this.space.map[i][j].id].drawMyself(this.ctx, cellBox)
-                    } catch (err) {
-                        console.log(i, j, this.space.map[i][j].type, this.space.map[i][j].id)
-                    }
+                    const currentViewX = i + this.currentView.x
+                    const currentViewY = j + this.currentView.y
+                    const { type, id } = this.space.map[currentViewX][currentViewY]
+                    this.space.objects[type][id].drawMyself(this.ctx, cellBox)
+                    // console.log(i, j, this.space.map[i][j].type, this.space.map[i][j].id)
                 }
             }
         }

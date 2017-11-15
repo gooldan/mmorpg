@@ -15,6 +15,7 @@ import { UserInput } from "./control/UserInput"
 import { GameEngine } from "./engine/GameEngine"
 import { BaseObject } from "./entity/BaseObject"
 import { ClientNetwork } from "./network/Network"
+import { Camera } from "./render/Camera"
 import env from "./env"
 import _ from "lodash"
 
@@ -49,20 +50,30 @@ const osMap = {
 // }
 function gameLoop(window, renderObj) {
     renderObj.onRenderUpdate()
-    window.requestAnimationFrame(function() {gameLoop(window, renderObj)})
+    window.requestAnimationFrame(() => { gameLoop(window, renderObj) })
 }
-function startProcess() {
+function startProcess(tokenIn) {
+    document.getElementById("conn").hidden = true
+    document.getElementById("conn1").hidden = true
+    document.getElementById("conn2").hidden = true
     const currentSpace = new Space(15, 15)
     const canvas = document.getElementById("render")
     const ctx = canvas.getContext("2d")
-    const render = new Renderer(window, ctx, currentSpace)
+    const camera = new Camera(7, 7, { x: 3, y: 3 }, currentSpace)
+    const render = new Renderer(window, ctx, currentSpace, camera)
     const gameEngine = new GameEngine(currentSpace, render)
     const userInput = new UserInput(window, gameEngine)
     const network = new ClientNetwork(gameEngine)
     gameEngine.setNetworkObject(network)
     gameEngine.setUserInput(userInput)
-    const token = document.getElementById("token").value
-    gameLoop(window, render)
+
+    let token = document.getElementById("token").value
+    if (tokenIn !== undefined) {
+        token = tokenIn
+    }
     gameEngine.start(token)
+    gameLoop(window, render)
 }
 document.getElementById("conn").addEventListener("click", startProcess)
+document.getElementById("conn1").addEventListener("click", () => { startProcess("e4a118916d950f433d65d942abde61603aa8d177bfbeb6bf72ee1b5f304c36a4") })
+document.getElementById("conn2").addEventListener("click", () => { startProcess("db5ae68d56e2e82df8aef4b4fecb8efc774c6814e6d21bb1fce742a5e94fc966") })

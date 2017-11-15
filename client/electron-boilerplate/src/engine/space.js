@@ -1,6 +1,7 @@
 import _ from "lodash"
 import { BaseObject } from "./../entity/BaseObject"
 import { Mountain } from "./../entity/mountain"
+import { EnemyOrc } from "./../entity/enemyOrc"
 
 export class Space {
     constructor(width, height) {
@@ -90,6 +91,11 @@ export class Space {
         this.map[position.x + delta.x][position.y + delta.y] = { id: objId, type: 2 }
         this.objects[objType][objId].position.x = position.x + delta.x
         this.objects[objType][objId].position.y = position.y + delta.y
+    }
+    onPlayerDamaged(playerId, dmg) {
+        if (this.objects[2][playerId] !== undefined) {
+            this.objects[2][playerId].hp -= dmg
+        }
     }
 }
 

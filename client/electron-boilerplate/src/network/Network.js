@@ -51,6 +51,14 @@ export class ClientNetwork {
                 this.gameEngine.onNetworkEvent({ type: "objectLeave", payload: data.payload })
             }
         })
+        this.socket.on("playersDamaged", (data) => {
+            if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("playersDamaged: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "playersDamaged", payload: data.payload })
+            }
+        })
     }
     login(token) {
         if (this.socket !== null) {
@@ -62,6 +70,9 @@ export class ClientNetwork {
             switch (event.type) {
             case "userObjMoved":
                 this.socket.emit("userObjMoved", event)
+                break
+            case "userHit":
+                this.socket.emit("userHit", event)
                 break
             default:
                 break

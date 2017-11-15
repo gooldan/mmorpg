@@ -21,26 +21,34 @@ export class UserInput {
     }
     onKeyEvent(event) {
         console.log("input")
-        const inputEvent = { type: "userObjMoved", payload: {} }
+        const inputEvent = { type: "", payload: {} }
         inputEvent.payload.delta = { x: 0, y: 0 }
         inputEvent.payload.objID = this.engine.getUserObjectID()
         const { key } = event
         switch (key) {
         case "w":
+            inputEvent.type = "userObjMoved"
             inputEvent.payload.delta.y -= 1
             break
         case "a":
+            inputEvent.type = "userObjMoved"
             inputEvent.payload.delta.x -= 1
             break
         case "s":
+            inputEvent.type = "userObjMoved"
             inputEvent.payload.delta.y += 1
             break
         case "d":
+            inputEvent.type = "userObjMoved"
             inputEvent.payload.delta.x += 1
+            break
+        case " ":
+            inputEvent.type = "userHit"
+            console.log("hit")
             break
         default:
             break
         }
-        this.engine.onUserEvent(inputEvent)
+        if (inputEvent.type !== "") { this.engine.onUserEvent(inputEvent) }
     }
 }

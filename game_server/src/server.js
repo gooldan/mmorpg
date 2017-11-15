@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
                 console.log(user._id + " CONNECTED. token: " + token)
 
                 const position = user.hero.location.coordinates
-                const newObject = new BaseObject(user._id, position.x, position.y, 2, user.hero.hp)
+                const newObject = new BaseObject(user._id, position.x, position.y, 2, user.hero.hp, user.hero.level)
 
                 location.currentSpace.addObject(newObject)
                 location.objects[2][newObject.id] = newObject
@@ -75,7 +75,7 @@ io.on('connection', function (socket) {
                 socket.broadcast.to(locationID).emit('objectEnter', {
                     ret: "OK",
                     type: "objectEnter",
-                    payload: { objID: user._id, position: newObject.position, objType: 2, hp: newObject.hp }
+                    payload: { objID: user._id, position: newObject.position, objType: 2, hp: newObject.hp, level: newObject.level }
                 })
                 /*
                  *
@@ -141,7 +141,7 @@ io.on('connection', function (socket) {
                             let newPortal = location.objects[4][portal.states.to]
 
                             const position = newPortal.position
-                            const newObject = new BaseObject(user._id, position.x, position.y, 2)
+                            const newObject = new BaseObject(user._id, position.x, position.y, 2,user.hero.hp, user.hero.level)
 
 
                             location.currentSpace.addObject(newObject)
@@ -164,7 +164,7 @@ io.on('connection', function (socket) {
                             socket.broadcast.to(locationID).emit('objectEnter', {
                                 ret: "OK",
                                 type: "objectEnter",
-                                payload: { objID: user._id, position: newObject.position, objType: 2 }
+                                payload: { objID: user._id, position: newObject.position, objType: 2, hp: user.hero.hp, level:  user.hero.level }
                             })
                             costyl = false
                         }
@@ -175,7 +175,26 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('hit', () => {
+    socket.on('userHit', () => {
+        console.log("userhit")
+        const newPos = {x:user.hero.location.coordinates.x, y: user.hero.location.coordinates.y}
+        const res = location.currentSpace.userHit(newPos)
+        for(let i in res)
+        {
+            Users[res[i]].hero.hp-=1   
+            res[i] = {id:res[i],dmg:1}         
+        }
+        if(res.length>0)
+        {
+            io.to(user.hero.location.id).emit("playersDamaged", {
+                ret: "OK",
+                type: "playersDamaged",
+                payload: {
+                    playersInfo: res
+                }
+            })
+        }
+
         /*
          * Игровая логика
          * */
@@ -191,10 +210,10 @@ io.on('connection', function (socket) {
     });
     socket.on('disconnect', (reason) => {
         let objInd = -1
-        user.save((err) => {
-            if(!err) 
-                console.log("USER " + user._id + " SAVED")
-        })
+        // user.save((err) => {
+        //     if(!err) 
+        //         console.log("USER " + user._id + " SAVED")
+        // })
         if (Users[user._id] !== undefined)
             delete Users[user._id]
         if (location === undefined)
@@ -214,7 +233,7 @@ io.on('connection', function (socket) {
     })
 });
 
-setTimeout(() => { GlobalSave() }, 5000)
+//setTimeout(() => { GlobalSave() }, 5000)
 
 function createToken() {
     return crypto.randomBytes(32).toString('hex');

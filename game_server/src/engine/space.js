@@ -91,5 +91,23 @@ export class Space {
         this.map[position.x][position.y] = { type: 0 }
         this.map[position.x + delta.x][position.y + delta.y] = { id: objId, type: 2 }
     }
+    userHit(position) {
+        let res = []
+        for(let i = -1; i<2; ++i) {
+            for(let j = -1; j<2; ++j) {
+                const newPos = {x:position.x+i, y:position.y+j}
+                if(this.checkBoundaries(newPos.x, newPos.y)){
+                    if(this.map[newPos.x][newPos.y].type === 2 && (newPos.x != position.x || newPos.y != position.y))
+                    {
+                        const hittedObjID = this.map[newPos.x][newPos.y].id
+                        res.push(hittedObjID)
+                        this.objects[hittedObjID].hp-=1                      
+                        console.log("USER HIT USER at pos", newPos)
+                    }
+                }
+            }    
+        }
+        return res
+    }
 }
 
