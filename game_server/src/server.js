@@ -1,12 +1,14 @@
-const io = require('socket.io', {transports: ['WebSocket', 'Flash Socket', 'AJAX long-polling'] })(8081),
+const io = require('socket.io', { transports: ['WebSocket', 'Flash Socket', 'AJAX long-polling'] })(8081),
     mongoose = require('mongoose'),
     crypto = require('crypto');
 import { Profile } from "./models/Profile"
-import { Location } from "./models/Location"
+import { LocationModel } from "./models/Location"
+import { Location } from "./location/Location"
 import { GameEngine } from "./engine/GameEngine"
 import { Space } from "./engine/space"
 import { BaseObject } from "./entity/BaseObject"
 import { InitLocation } from "./initServer"
+import { setTimeout } from 'timers';
 mongoose.Promise = Promise;
 
 mongoose.connect("mongodb://mmorpg:8fd5b96b4@ds123695.mlab.com:23695/mmorpg", {
@@ -27,36 +29,13 @@ const locationIDs = ["59fb0aef28e0065908e96705", "5a05dfa07b6c4117f8488834", "5a
 
 const Locations = {};
 
-for (let id in locationIDs) {
-    Locations[locationIDs[id]] = {
-        map: undefined,
-        loadMap: false,
-        gameEngine: new GameEngine(),
-        objects: [],
-        currentSpace: undefined,
-        mountains: []
-    }
-    InitLocation(locationIDs[id], (m, entities, mountains) => {
-        Locations[locationIDs[id]].currentSpace = new Space(m[0].length, m.length)
-        Locations[locationIDs[id]].map = m
-        Locations[locationIDs[id]].currentSpace.loadMap(Locations[locationIDs[id]].map)
-        Locations[locationIDs[id]].gameEngine.LoadSpace(Locations[locationIDs[id]].currentSpace)
-        Locations[locationIDs[id]].loadMap = true
-        Locations[locationIDs[id]].objects[0] = {}
-        Locations[locationIDs[id]].objects[1] = {}
-        Locations[locationIDs[id]].objects[2] = {}
-        Locations[locationIDs[id]].objects[4] = {}
-        for (let entity in entities) {
-            Locations[locationIDs[id]].objects[entities[entity].type][entities[entity]._id] = entities[entity]
-        }
-        for (let im in mountains) {
-            let mountain = mountains[im]
-            Locations[locationIDs[id]].mountains.push(mountain)
-        }
-
-    })
+for (let i in locationIDs) {
+    Locations[locationIDs[i]] = new Location(locationIDs[i])
 }
+
 let Servers = { host: 'localhost', port: '8081' }
+
+let Users = {}
 
 io.on('connection', function (socket) {
     let user = undefined
@@ -66,6 +45,7 @@ io.on('connection', function (socket) {
         Profile.findOne({ 'local.token': token }, (err, u) => {
             if (u) {
                 user = u;
+                Users[user._id] = user
                 locationID = user.hero.location.id
                 if (Locations[locationID].objects[2][user._id] !== undefined)
                     return
@@ -76,7 +56,7 @@ io.on('connection', function (socket) {
                 console.log(user._id + " CONNECTED. token: " + token)
 
                 const position = user.hero.location.coordinates
-                const newObject = new BaseObject(user._id, position.x, position.y, undefined, 2)
+                const newObject = new BaseObject(user._id, position.x, position.y, 2)
 
                 location.currentSpace.addObject(newObject)
                 location.objects[2][newObject.id] = newObject
@@ -95,7 +75,7 @@ io.on('connection', function (socket) {
                 socket.broadcast.to(locationID).emit('objectEnter', {
                     ret: "OK",
                     type: "objectEnter",
-                    payload: { objID: user._id, position: position, objType: 2 }
+                    payload: { objID: user._id, position: newObject.position, objType: 2 }
                 })
                 /*
                  *
@@ -108,11 +88,12 @@ io.on('connection', function (socket) {
     });
     let costyl = false
     socket.on('userObjMoved', (event) => {
-        const receiveTime = new Date().getTime()        
+        const receiveTime = new Date().getTime()
         const res = location.currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
         if (res.res) {
-            if (res.portal === undefined)
-            {   
+            if (res.portal === undefined) {
+                user.hero.location.coordinates.x = res.position.x
+                user.hero.location.coordinates.y = res.position.y
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })
                 console.log("obj move proc time:", (new Date().getTime()) - receiveTime)
             }
@@ -120,7 +101,7 @@ io.on('connection', function (socket) {
                 costyl = true
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })
                 let portal = location.objects[4][res.portal]
-                Location.findOne({
+                LocationModel.findOne({
                     "entity": {
                         $elemMatch: {
                             _id: portal.states.to
@@ -135,9 +116,9 @@ io.on('connection', function (socket) {
                             payload: {
                             }
                         })
-                        
+
                         const obj = location.objects[2][user._id]
-                        if(obj == undefined) {
+                        if (obj == undefined) {
                             return
                         }
                         location.currentSpace.removeObject(obj)
@@ -148,20 +129,26 @@ io.on('connection', function (socket) {
                             payload: { objID: obj.id, position: obj.position, objType: 2 }
                         })
                         socket.leave(locationID)
-                        
+
                         const delayedEnter = () => {
-                            // CONNECT
+                            // CONNECTi
                             locationID = loca._id
                             location = Locations[locationID]
                             socket.join(locationID)
 
+
+
                             let newPortal = location.objects[4][portal.states.to]
 
                             const position = newPortal.position
-                            const newObject = new BaseObject(user._id, position.x, position.y, undefined, 2)
+                            const newObject = new BaseObject(user._id, position.x, position.y, 2)
+
 
                             location.currentSpace.addObject(newObject)
                             location.objects[2][newObject.id] = newObject
+                            user.hero.location.id = locationID
+                            user.hero.location.coordinates.x = newObject.position.x
+                            user.hero.location.coordinates.y = newObject.position.y
 
                             socket.emit("enterWorld", {
                                 ret: "OK",
@@ -177,11 +164,11 @@ io.on('connection', function (socket) {
                             socket.broadcast.to(locationID).emit('objectEnter', {
                                 ret: "OK",
                                 type: "objectEnter",
-                                payload: { objID: user._id, position: position, objType: 2 }
+                                payload: { objID: user._id, position: newObject.position, objType: 2 }
                             })
                             costyl = false
                         }
-                        setTimeout(delayedEnter,1000)                        
+                        setTimeout(delayedEnter, 1000)
                     }
                 })
             }
@@ -204,6 +191,12 @@ io.on('connection', function (socket) {
     });
     socket.on('disconnect', (reason) => {
         let objInd = -1
+        user.save((err) => {
+            if(!err) 
+                console.log("USER " + user._id + " SAVED")
+        })
+        if (Users[user._id] !== undefined)
+            delete Users[user._id]
         if (location === undefined)
             return
         const obj = location.objects[2][user._id]
@@ -221,6 +214,41 @@ io.on('connection', function (socket) {
     })
 });
 
+setTimeout(() => { GlobalSave() }, 5000)
+
 function createToken() {
     return crypto.randomBytes(32).toString('hex');
+}
+
+function GlobalSave() {
+    SaveUsers()
+    SaveLocations()
+    setTimeout(() => { GlobalSave() }, 5000)
+}
+function SaveUsers() {
+    for (let id in Users) {
+        Users[id].save((err) => {
+            if(!err) 
+                console.log("USER " + id + " SAVED")
+        })
+    }
+}
+
+function SaveLocations() {
+    for (let iloc in Locations) {
+        LocationModel.findOne({ _id: iloc }, (err, loca) => {
+            for (let i in loca.entity) {
+                let entity = loca.entity[i]
+                if (Locations[iloc].objects[entity.type] !== undefined && Locations[iloc].objects[entity.type][entity._id] !== undefined && Locations[iloc].objects[entity.type][entity._id].states !== undefined) {
+
+                    loca.entity[i].states = Locations[iloc].objects[entity.type][entity._id].states
+                }
+            }
+            loca.save((err) => {
+                if (!err) {
+                    console.log("LOCATION " + loca.name + " (" + iloc + ") SAVED")
+                }
+            })
+        })
+    }
 }

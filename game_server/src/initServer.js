@@ -1,5 +1,5 @@
 const _ = require("lodash");
-import {Location} from "./models/Location"
+import {LocationModel} from "./models/Location"
 
 export let InitLocation = async (locationID, callback) => {
   var fs = require('fs');
@@ -28,7 +28,7 @@ export let InitLocation = async (locationID, callback) => {
         }
       }
     }
-    Location.findOne({ _id: locationID }, (err, location) => {
+    LocationModel.findOne({ _id: locationID }, (err, location) => {
 
       if (location) {
         for (let i = 0; i < location.entity.length; i++) {

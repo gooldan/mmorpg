@@ -20,4 +20,4 @@ var LocationScheme = new Schema({
     max_players: { type: Number, default: 4 }
 });
 
-export let Location = mongoose.model('Location', LocationScheme);
+export let LocationModel = mongoose.model('Location', LocationScheme);

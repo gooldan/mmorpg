@@ -121,7 +121,7 @@ export class GameEngine {
         case "objectLeave": {
             const { objID, position, objType } = event.payload
             this.spaceObject.removeObject(objID, objType)
-            this.userInput.stop()
+            //this.userInput.stop()
             this.onSpaceUpdated()
             break
         }

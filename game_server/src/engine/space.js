@@ -4,7 +4,7 @@ export class Space {
     constructor(width, height) {
         this.width = width
         this.height = height
-        this.map = _.times(width, () => _.times(height, _.constant(null)))
+        this.map = _.times(width, () => _.times(height, _.constant({type: 0})))
         this.objects = {}
 
     }
@@ -77,10 +77,10 @@ export class Space {
                     this.map[oldPosX][oldPosY] = { type: 0 }
                     this.map[newPosX][newPosY] = { id: objId, type: 2 }
                     oldObj.position = { x: newPosX, y: newPosY }
-                    return { res: true }
+                    return { res: true, position: oldObj.position }
                 }
                 else if (this.map[newPosX][newPosY].type === 4) {
-                    return { res: true, portal: this.map[newPosX][newPosY].id }
+                    return { res: true, portal: this.map[newPosX][newPosY].id, position: oldObj.position }
                 }
             }
         }

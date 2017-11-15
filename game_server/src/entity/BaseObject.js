@@ -1,10 +1,9 @@
 import _ from "lodash"
 
 export class BaseObject {
-    constructor(id, x, y, drawFunc, type) {
+    constructor(id, x, y, type) {
         this.id = id
         this.position = { x, y }
-        this.drawMyself = drawFunc
         this.type = type
     }
     updatePosition(x, y) {
