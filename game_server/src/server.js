@@ -1,4 +1,4 @@
-const io = require('socket.io')(8081),
+const io = require('socket.io', {transports: ['WebSocket', 'Flash Socket', 'AJAX long-polling'] })(8081),
     mongoose = require('mongoose'),
     crypto = require('crypto');
 import { Profile } from "./models/Profile"
@@ -108,11 +108,14 @@ io.on('connection', function (socket) {
     });
     let costyl = false
     socket.on('userObjMoved', (event) => {
-        console.log(user._id + " (" + event.payload.objID + ") moved delta:(" + event.payload.delta.x + ", " + event.payload.delta.y + ")")
+        const receiveTime = new Date().getTime()        
         const res = location.currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
         if (res.res) {
             if (res.portal === undefined)
+            {   
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })
+                console.log("obj move proc time:", (new Date().getTime()) - receiveTime)
+            }
             else if (!costyl) {
                 costyl = true
                 io.to(locationID).emit("objMoved", { ret: "OK", type: "objMoved", payload: event.payload })

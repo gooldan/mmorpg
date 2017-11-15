@@ -7,7 +7,7 @@ export class ClientNetwork {
         this.logNet = true
     }
     connectToServer(ip, port) {
-        this.socket = io(`http://${ip}:${port}/`)
+        this.socket = io(`http://${ip}:${port}/`, { forceNode: true })
         this.bindToEvents()
     }
     bindToEvents() {
