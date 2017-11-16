@@ -97,5 +97,22 @@ export class Space {
             this.objects[2][playerId].hp -= dmg
         }
     }
+    onPlayerLvlUp(playerId, newLevel) {
+        if (this.objects[2][playerId] !== undefined) {
+            this.objects[2][playerId].level = newLevel
+        }
+    }
+    onPlayerDead(playerId) {
+        if (this.objects[2][playerId] !== undefined) {
+            this.objects[2][playerId].dead = true
+        }
+    }
+    onPlayerRespawn(playerId, newPos, newHp) {
+        if (this.objects[2][playerId] !== undefined) {
+            this.objects[2][playerId].dead = false
+            this.onObjectMoved(newPos, playerId, 2)
+            this.objects[2][playerId].hp = newHp
+        }
+    }
 }
 

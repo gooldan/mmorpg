@@ -148,6 +148,22 @@ export class GameEngine {
             }
             break
         }
+        case "playerLvlUp": {
+            this.spaceObject.onPlayerLvlUp(event.payload.objId, event.payload.newLevel)
+            break
+        }
+        case "playerDead": {
+            this.spaceObject.onPlayerDead(event.payload.objId)
+            break
+        }
+        case "playerRespawn": {
+            this.spaceObject.onPlayerRespawn(event.payload.objId, event.payload.newPos, event.payload.newHp)
+            if (event.payload.objId === this.userObj.id) {
+                this.renderObject.camera.onCameraCenterChanged({ ...this.userObj.position })
+                this.renderObject.onCameraParametersChanged()
+            }
+            break
+        }
         default: {
             break
         }

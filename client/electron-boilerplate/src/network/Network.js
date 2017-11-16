@@ -59,6 +59,30 @@ export class ClientNetwork {
                 this.gameEngine.onNetworkEvent({ type: "playersDamaged", payload: data.payload })
             }
         })
+        this.socket.on("playerLvlUp", (data) => {
+            if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("playerLvlUp: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "playerLvlUp", payload: data.payload })
+            }
+        })
+        this.socket.on("playerDead", (data) => {
+            if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("playerDead: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "playerDead", payload: data.payload })
+            }
+        })
+        this.socket.on("playerRespawn", (data) => {
+            if (data.ret === "OK") {
+                if (this.logNet) {
+                    console.log("playerRespawn: ", data.payload)
+                }
+                this.gameEngine.onNetworkEvent({ type: "playerRespawn", payload: data.payload })
+            }
+        })
     }
     login(token) {
         if (this.socket !== null) {

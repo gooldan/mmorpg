@@ -11,6 +11,7 @@ export class EnemyOrc extends BaseObject {
         this.drawMyself = this.drawBody
         this.hp = hp
         this.level = level
+        this.dead = false
     }
     changeState(newState) {
         this.state = newState
@@ -33,7 +34,11 @@ export class EnemyOrc extends BaseObject {
             ((Math.floor(this.state / 3)) * 190),
             0, 190, 190, cellBoxCharacter.x, cellBoxCharacter.y, cellBoxCharacter.width, cellBoxCharacter.height,
         )
-        ctx.fillText(`hp:${this.hp} lvl:${this.level}`, statusBox.x, statusBox.y + statusBox.height)
+        if (this.dead) {
+            ctx.fillText("DEAD", statusBox.x, statusBox.y + statusBox.height)
+        } else {
+            ctx.fillText(`hp:${this.hp} lvl:${this.level}`, statusBox.x, statusBox.y + statusBox.height)
+        }
         this.state += 1
         if (this.state === 51) {
             this.state = 0

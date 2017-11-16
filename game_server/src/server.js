@@ -58,6 +58,8 @@ io.on('connection', function (socket) {
                 console.log(user._id + " CONNECTED. token: " + token)
 
                 const position = user.hero.location.coordinates
+                user.hero.hp=15
+                user.hero.level = 1
                 const newObject = new BaseObject(user._id, position.x, position.y, 2, user.hero.hp, user.hero.level)
 
                 location.currentSpace.addObject(newObject)
@@ -189,11 +191,53 @@ io.on('connection', function (socket) {
         console.log("userhit")
         const newPos = {x:user.hero.location.coordinates.x, y: user.hero.location.coordinates.y}
         const res = location.currentSpace.userHit(newPos)
+        const dmg = user.hero.level
         for(let i in res)
-        {
-            location.objects[2][res[i]].hp -= 1
-            Users[res[i]].hero.hp-=1   
-            res[i] = {id:res[i],dmg:1}         
+        {   
+            if(location.objects[2][res[i]].hp - dmg <= 1)
+            {
+                location.objects[2][user._id].level+=1
+                Users[user._id].hero.level+=1   
+                io.to(locationID).emit("playerLvlUp", {
+                    ret: "OK",
+                    type: "playerLvlUp",
+                    payload: {
+                        objId:user._id,
+                        newLevel:user.hero.level
+                    }
+                })
+                io.to(locationID).emit("playerDead", {
+                    ret: "OK",
+                    type: "playerDead",
+                    payload: {
+                        objId:res[i]
+                    }
+                })
+                setTimeout((thisObjId)=>{
+                    console.log(thisObjId)
+                    location.objects[2][thisObjId].hp = location.objects[2][thisObjId].level*15
+                    const newRealPos = location.currentSpace.findClosePlace(location.objects[2][thisObjId].position.x, 
+                                                                            location.objects[2][thisObjId].position.y)
+                    const newPos = {x:Math.floor(location.currentSpace.width/2) - newRealPos.x,
+                                    y:Math.floor(location.currentSpace.height/2) - newRealPos.y} 
+                    console.log("RESPAWNING PLAYER ", thisObjId, "ON delta",newPos)
+                    const res = location.currentSpace.onObjectPositionUpdated(newPos, thisObjId)
+                    io.to(locationID).emit("playerRespawn", {
+                        ret: "OK",
+                        type: "playerRespawn",
+                        payload: {
+                            objId:thisObjId,
+                            newPos: newPos,
+                            newHp: location.objects[2][thisObjId].hp
+                        }
+                    })
+                },1500,res[i])
+                res[i] = {id:res[i],dmg:0}     
+            }
+            else {
+                location.objects[2][res[i]].hp -= dmg
+                res[i] = {id:res[i],dmg:dmg}         
+            }
         }
         if(res.length>0)
         {
@@ -223,7 +267,9 @@ io.on('connection', function (socket) {
         let objInd = -1
         user.save((err) => {
             if(!err) 
-                console.log("USER " + user._id + " SAVED")
+            {
+                //console.log("USER " + user._id + " SAVED")
+            }
         })
         if (Users[user._id] !== undefined)
             delete Users[user._id]
@@ -276,7 +322,7 @@ function SaveLocations() {
             }
             loca.save((err) => {
                 if (!err) {
-                    console.log("LOCATION " + loca.name + " (" + iloc + ") SAVED")
+                    //console.log("LOCATION " + loca.name + " (" + iloc + ") SAVED")
                 }
             })
         })

@@ -67,7 +67,7 @@ export class Space {
         }
         console.log(s)
         const oldObj = this.objects[objId]
-        if (oldObj !== undefined) {
+        if (oldObj !== undefined && oldObj.hp>1) {
             const oldPosX = oldObj.position.x
             const oldPosY = oldObj.position.y
             const newPosX = oldPosX + delta.x
@@ -100,9 +100,8 @@ export class Space {
                     if(this.map[newPos.x][newPos.y].type === 2 && (newPos.x != position.x || newPos.y != position.y))
                     {
                         const hittedObjID = this.map[newPos.x][newPos.y].id
-                        res.push(hittedObjID)
-                        this.objects[hittedObjID].hp-=1                      
-                        console.log("USER HIT USER at pos", newPos)
+                        res.push(hittedObjID)                      
+                        console.log("USER is on", position, " HIT USER at pos", newPos)
                     }
                 }
             }    
