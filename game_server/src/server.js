@@ -34,17 +34,19 @@ for (let i in locationIDs) {
 }
 
 let Servers = { host: 'localhost', port: '8081' }
-
+const moveSpeed = 200
 let Users = {}
 
 io.on('connection', function (socket) {
     let user = undefined
     let locationID = undefined
     let location = undefined
+    let lastMove = undefined
     socket.on('login', (token) => {
         Profile.findOne({ 'local.token': token }, (err, u) => {
             if (u) {
                 user = u;
+                lastMove = Date.now()
                 Users[user._id] = user
                 locationID = user.hero.location.id
                 if (Locations[locationID].objects[2][user._id] !== undefined)
@@ -88,6 +90,10 @@ io.on('connection', function (socket) {
     });
     let costyl = false
     socket.on('userObjMoved', (event) => {
+        let timeNow = Date.now()
+        if (timeNow - lastMove < moveSpeed)
+            return
+        lastMove = timeNow
         const receiveTime = new Date().getTime()
         const res = location.currentSpace.onObjectPositionUpdated(event.payload.delta, event.payload.objID)
         if (res.res) {
@@ -176,6 +182,10 @@ io.on('connection', function (socket) {
     });
 
     socket.on('userHit', () => {
+        let timeNow = Date.now()
+        if (timeNow - lastMove < moveSpeed)
+            return
+        lastMove = timeNow
         console.log("userhit")
         const newPos = {x:user.hero.location.coordinates.x, y: user.hero.location.coordinates.y}
         const res = location.currentSpace.userHit(newPos)
