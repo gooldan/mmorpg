@@ -7,6 +7,7 @@ export class BaseObject {
         this.type = type
         this.hp = hp
         this.level = level
+        this.dead = false
     }
     updatePosition(x, y) {
         this.position.x = x

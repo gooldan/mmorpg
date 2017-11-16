@@ -100,8 +100,11 @@ export class Space {
                     if(this.map[newPos.x][newPos.y].type === 2 && (newPos.x != position.x || newPos.y != position.y))
                     {
                         const hittedObjID = this.map[newPos.x][newPos.y].id
-                        res.push(hittedObjID)                      
-                        console.log("USER is on", position, " HIT USER at pos", newPos)
+                        if(!this.objects[hittedObjID].dead)
+                            {
+                                res.push(hittedObjID)                      
+                                console.log("USER is on", position, " HIT USER at pos", newPos)
+                            }
                     }
                 }
             }    

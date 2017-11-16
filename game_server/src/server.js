@@ -192,12 +192,13 @@ io.on('connection', function (socket) {
         const newPos = {x:user.hero.location.coordinates.x, y: user.hero.location.coordinates.y}
         const res = location.currentSpace.userHit(newPos)
         const dmg = user.hero.level
-        for(let i in res)
+        for(let i = 0; i < res.length; ++i)
         {   
-            if(location.objects[2][res[i]].hp - dmg <= 1)
+            if(location.objects[2][res[i]].hp - dmg <= 1 && !location.objects[2][user._id].dead)
             {
                 location.objects[2][user._id].level+=1
-                Users[user._id].hero.level+=1   
+                Users[user._id].hero.level+=1
+                location.objects[2][user._id].dead = true   
                 io.to(locationID).emit("playerLvlUp", {
                     ret: "OK",
                     type: "playerLvlUp",
@@ -231,8 +232,10 @@ io.on('connection', function (socket) {
                             newHp: location.objects[2][thisObjId].hp
                         }
                     })
+                    location.objects[2][user._id].dead = false
                 },1500,res[i])
-                res[i] = {id:res[i],dmg:0}     
+                res.splice(i,1)
+                i-=1   
             }
             else {
                 location.objects[2][res[i]].hp -= dmg
