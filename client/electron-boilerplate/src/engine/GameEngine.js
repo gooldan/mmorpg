@@ -76,7 +76,7 @@ export class GameEngine {
                 for (const iobj in objects[2]) {
                     const obj = objects[2][iobj]
                     if (obj.id !== userObj.id) {
-                        const newObject = new EnemyOrc(obj.id, obj.position.x, obj.position.y, userObj.hp, userObj.level, this.renderObject.getDefaultDraw("userEnemy"), 2)
+                        const newObject = new EnemyOrc(obj.id, obj.position.x, obj.position.y, obj.hp, obj.level, this.renderObject.getDefaultDraw("userEnemy"), 2)
                         this.spaceObject.addObject(newObject)
                     }
                 }

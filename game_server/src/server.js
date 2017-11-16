@@ -181,12 +181,13 @@ io.on('connection', function (socket) {
         const res = location.currentSpace.userHit(newPos)
         for(let i in res)
         {
+            location.objects[2][res[i]].hp -= 1
             Users[res[i]].hero.hp-=1   
             res[i] = {id:res[i],dmg:1}         
         }
         if(res.length>0)
         {
-            io.to(user.hero.location.id).emit("playersDamaged", {
+            io.to(locationID).emit("playersDamaged", {
                 ret: "OK",
                 type: "playersDamaged",
                 payload: {
@@ -210,10 +211,10 @@ io.on('connection', function (socket) {
     });
     socket.on('disconnect', (reason) => {
         let objInd = -1
-        // user.save((err) => {
-        //     if(!err) 
-        //         console.log("USER " + user._id + " SAVED")
-        // })
+        user.save((err) => {
+            if(!err) 
+                console.log("USER " + user._id + " SAVED")
+        })
         if (Users[user._id] !== undefined)
             delete Users[user._id]
         if (location === undefined)
@@ -233,7 +234,7 @@ io.on('connection', function (socket) {
     })
 });
 
-//setTimeout(() => { GlobalSave() }, 5000)
+setTimeout(() => { GlobalSave() }, 5000)
 
 function createToken() {
     return crypto.randomBytes(32).toString('hex');
